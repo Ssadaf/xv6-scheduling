@@ -6,7 +6,7 @@
 #include "x86.h"
 #include "proc.h"
 #include "spinlock.h"
-#include "traps.h"
+
 
 struct {
   struct spinlock lock;
@@ -89,7 +89,8 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
-  p->creation_time = IRQ_TIMER;
+  p->creation_time = ticks;
+  p->priority = 5;
 
   release(&ptable.lock);
 
@@ -318,9 +319,9 @@ void round_robin(){
   struct cpu *c = mycpu();
   c->proc = 0;
   
-  for(;;){
-    // Enable interrupts on this processor.
-    sti();
+  // for(;;){
+  //   // Enable interrupts on this processor.
+  //   sti();
 
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
@@ -344,7 +345,51 @@ void round_robin(){
     }
     release(&ptable.lock);
 
+  // }
+}
+
+void priority_scheduler(void){
+  int proc_set = 0;
+  int max_priority = 0;
+  struct proc *p;
+  struct proc *to_run;
+  struct cpu *c = mycpu();
+  c->proc = 0;
+  
+  // Enable interrupts on this processor.
+  sti();
+
+  // Loop over process table looking for process to run.
+  acquire(&ptable.lock);
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    if(p->state != RUNNABLE)
+      continue;
+
+    // Switch to chosen process.  It is the process's job
+    // to release ptable.lock and then reacquire it
+    // before jumping back to us.
+    if(p->priority > max_priority){
+      max_priority = p->priority;
+      to_run = p;
+      proc_set = 1;
+    }
   }
+  if(proc_set == 1){
+    c->proc = to_run;
+    switchuvm(to_run);
+    to_run->state = RUNNING;
+
+    swtch(&(c->scheduler), to_run->context);
+    switchkvm();
+
+    // Process is done running for now.
+    // It should have changed its p->state before coming back.
+    c->proc = 0;
+    proc_set = 0;
+    max_priority = 0;
+  }
+  release(&ptable.lock);
+  
 }
 
 //PAGEBREAK: 42
@@ -358,6 +403,48 @@ void round_robin(){
 void
 scheduler(void)
 {
+  int proc_set = 0;
+  int max_priority = 0;
+  struct proc *p;
+  struct proc *to_run;
+  struct cpu *c = mycpu();
+  c->proc = 0;
+  
+  for(;;){
+    // Enable interrupts on this processor.
+    sti();
+
+   // Loop over process table looking for process to run.
+    acquire(&ptable.lock);
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+      if(p->state != RUNNABLE)
+        continue;
+
+      // Switch to chosen process.  It is the process's job
+      // to release ptable.lock and then reacquire it
+      // before jumping back to us.
+      if(p->priority > max_priority){
+        max_priority = p->priority;
+        to_run = p;
+        proc_set = 1;
+      }
+    }
+   if(proc_set == 1){
+    c->proc = to_run;
+    switchuvm(to_run);
+    to_run->state = RUNNING;
+
+    swtch(&(c->scheduler), to_run->context);
+    switchkvm();
+
+    // Process is done running for now.
+    // It should have changed its p->state before coming back.
+    c->proc = 0;
+    proc_set = 0;
+    max_priority = 0;
+  }
+    release(&ptable.lock);
+  }
   
 }
 
