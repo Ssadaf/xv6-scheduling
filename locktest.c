@@ -9,7 +9,8 @@ int main ()
 	ticketlockinit();
 
 	pid = fork();
-	for (int i = 1; i < NCHILD; i++)
+	int i;
+	for (i = 1; i < NCHILD; i++)
 		if (pid < 0)
 		{
 			printf(1, "fork failed\n");
@@ -30,7 +31,7 @@ int main ()
 	}
 	else
 	{
-		for (int i = 0; i < NCHILD; i++)
+		for (i = 0; i < NCHILD; i++)
 			wait();
 		printf(1, "user program finished\n");
 		printf(2, "ticket lock value: %d\n", ticketlocktest() - 1);
