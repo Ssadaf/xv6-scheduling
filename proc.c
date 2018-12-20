@@ -118,6 +118,20 @@ found:
   return p;
 }
 
+
+///////change
+void change_proc_priority(int priority, int pid)
+{
+  acquire(&ptable.lock);
+  struct proc *p;
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
+  {
+    if(p->pid == pid)
+      p->priority = priority;
+  }
+  release(&ptable.lock);
+}
+
 //PAGEBREAK: 32
 // Set up first user process.
 void

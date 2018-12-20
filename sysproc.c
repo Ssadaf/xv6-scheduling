@@ -129,3 +129,11 @@ int sys_rwtest(void)
     return -1;
   return readers_writers_shared;
 }
+
+int sys_changepriority(void)
+{
+  int priority;
+  if (argint(0, &priority) < 0)
+    return -1;
+  changepriority(priority);
+}

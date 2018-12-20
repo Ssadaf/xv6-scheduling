@@ -24,3 +24,4 @@
 #define SYS_ticketlocktest 23
 #define SYS_rwinit 24
 #define SYS_rwtest 25
+#define SYS_changepriority 26
