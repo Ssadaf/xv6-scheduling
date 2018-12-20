@@ -6,6 +6,7 @@
 #include "x86.h"
 #include "proc.h"
 #include "spinlock.h"
+#include "traps.h"
 
 struct {
   struct spinlock lock;
@@ -15,7 +16,6 @@ struct {
 static struct proc *initproc;
 
 int nextpid = 1;
-int ticks = 1;
 extern void forkret(void);
 extern void trapret(void);
 
@@ -89,7 +89,7 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
-  p->creation_time = ticks++;
+  p->creation_time = IRQ_TIMER;
 
   release(&ptable.lock);
 
