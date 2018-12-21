@@ -119,8 +119,7 @@ found:
 }
 
 
-///////change
-void change_proc_priority(int priority, int pid)
+void changepriority(int priority, int pid)
 {
   acquire(&ptable.lock);
   struct proc *p;

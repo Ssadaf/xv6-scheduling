@@ -135,5 +135,5 @@ int sys_changepriority(void)
   int priority;
   if (argint(0, &priority) < 0)
     return -1;
-  changepriority(priority);
+  changepriority(priority, myproc()->pid);
 }
