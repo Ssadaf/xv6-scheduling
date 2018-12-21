@@ -186,7 +186,7 @@ int posnumtsostring(int num, char * out)
     i++;
   for (j = i - 1; j >= 0; j--)
   {
-    out[j] = num % 10;
+    out[j] = (num % 10) + '0';
     num /= 10;
   }
   return i;
@@ -194,7 +194,7 @@ int posnumtsostring(int num, char * out)
 
 void printproc()
 {
-  cprintf("name\t\tpid\tstate\t\tqueue\tpriority\tlottery tickets  \tcreation time\n");
+  cprintf("name           pid  state     queue     priority  lotteryTickets  creationTime\n");
   acquire(&ptable.lock);
   struct proc *p;
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
@@ -204,7 +204,7 @@ void printproc()
       char out[256];
       for (len = 0; p->name[len] != '\0'; len++)
         out[len] = p->name[len];
-      for (;len < 10; len++)
+      for (;len < 15; len++)
         out[len] = ' ';
       len += posnumtsostring(p->pid, out + len);
       for (;len < 20; len++)
@@ -220,7 +220,7 @@ void printproc()
       for (;len < 50; len++)
         out[len] = ' ';
       len += posnumtsostring(p->lottery_ticket, out + len);
-      for (;len < 60; len++)
+      for (;len < 66; len++)
         out[len] = ' ';
       len += posnumtsostring(p->creation_time, out + len);
       out[len] = '\0';
