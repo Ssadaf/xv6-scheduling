@@ -91,6 +91,8 @@ found:
   p->pid = nextpid++;
   p->creation_time = ticks;
   p->priority = 5;
+  p->lottery_ticket = 1;
+  p->queue_num = 3;
 
   release(&ptable.lock);
 
