@@ -1,7 +1,7 @@
 #include "types.h"
 #include "user.h"
 
-#define NCHILD 10
+#define NCHILD 30
 
 int main ()
 {
@@ -9,15 +9,17 @@ int main ()
 
 	pid = fork();
 	int i;
+	changepriority(2, getpid());
 	for (i = 1; i < NCHILD; i++)
 		if (pid < 0)
 		{
 			printf(1, "fork failed\n");
 			exit();
 		}
-		else if (pid > 0){
+		else if (pid > 0)
 			pid = fork();
-        }
+		else
+			break;
 	
 	if (pid < 0)
 	{
@@ -26,11 +28,13 @@ int main ()
 	}
 	else if (pid == 0)
 	{
-        int i, j;
+		changepriority(NCHILD - i + 10, getpid());
+		int j = 0;
         int z = 1;
-        for(i = 0; i < 8000; i++)
-            for(j = 0; j < 8000; j++)
-                z *= i * j;
+        for(j = 0; j < 100000000; j++)
+            z += (j + 1);
+		printf (2, "z = %d, ", z);
+		printf(2, "child %d is done\n", i);
 	}
 	else
 	{

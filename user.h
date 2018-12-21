@@ -25,7 +25,7 @@ int sleep(int);
 int uptime(void);
 int ticketlockinit(void);
 int ticketlocktest(void);
-int changepriority(void);
+int changepriority(int, int);
 
 // ulib.c
 int stat(const char*, struct stat*);

@@ -416,8 +416,8 @@ void priority_scheduler(void){
 void
 scheduler(void)
 {
-  int proc_set = 0;
-  int max_priority = 0;
+  int proc_set;
+  int min_pnum;
   struct proc *p;
   struct proc *to_run;
   struct cpu *c = mycpu();
@@ -428,6 +428,8 @@ scheduler(void)
     sti();
 
    // Loop over process table looking for process to run.
+    min_pnum = 0;
+    proc_set = 0;
     acquire(&ptable.lock);
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if(p->state != RUNNABLE)
@@ -436,26 +438,24 @@ scheduler(void)
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
-      if(p->priority > max_priority){
-        max_priority = p->priority;
+      if(proc_set == 0 || p->priority < min_pnum){
+        min_pnum = p->priority;
         to_run = p;
         proc_set = 1;
       }
     }
    if(proc_set == 1){
-    c->proc = to_run;
-    switchuvm(to_run);
-    to_run->state = RUNNING;
+      c->proc = to_run;
+      switchuvm(to_run);
+      to_run->state = RUNNING;
 
-    swtch(&(c->scheduler), to_run->context);
-    switchkvm();
+      swtch(&(c->scheduler), to_run->context);
+      switchkvm();
 
-    // Process is done running for now.
-    // It should have changed its p->state before coming back.
-    c->proc = 0;
-    proc_set = 0;
-    max_priority = 0;
-  }
+      // Process is done running for now.
+      // It should have changed its p->state before coming back.
+      c->proc = 0;
+    }
     release(&ptable.lock);
   }
   
