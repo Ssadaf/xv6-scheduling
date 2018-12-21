@@ -471,7 +471,7 @@ void
 scheduler(void)
 {
   int proc_set;
-  int min_pnum;
+  int min_pnum, min_creation;
   struct proc *p;
   struct proc *to_run;
   struct cpu *c = mycpu();
@@ -483,12 +483,17 @@ scheduler(void)
 
    // Loop over process table looking for process to run.
     min_pnum = 0;
+    min_creation = 0;
     proc_set = 0;
     acquire(&ptable.lock);
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if (p->state != RUNNABLE || p->queue_num != 2)
         continue;
-      
+      if(proc_set == 0 || p->creation_time < min_creation){
+        min_creation = p->creation_time;
+        to_run = p;
+        proc_set = 1;
+      }
     }
     if (!proc_set)
     {

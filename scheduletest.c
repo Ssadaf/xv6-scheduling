@@ -16,8 +16,11 @@ int main ()
 			printf(1, "fork failed\n");
 			exit();
 		}
-		else if (pid > 0)
+		else if (pid > 0){
 			pid = fork();
+			if(i == 6)
+				changequeue(2, pid);
+		}
 		else
 			break;
 	

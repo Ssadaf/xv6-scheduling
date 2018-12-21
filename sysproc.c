@@ -132,21 +132,35 @@ int sys_rwtest(void)
 
 int sys_changepriority(void)
 {
-  int priority;
+  int priority, pid;
   if (argint(0, &priority) < 0)
     return -1;
-  changepriority(priority, myproc()->pid);
+  if(argint(1, &pid) < 0)
+    return -1;
+  changepriority(priority, pid);
   return priority;
 }
 
 int sys_changequeue(void)
 {
-  return 1;
+  int queue, pid;
+  if (argint(0, &queue) < 0)
+    return -1;
+  if(argint(1, &pid) < 0)
+    return -1;
+  changepriority(queue, pid);
+  return queue;
 }
 
 int sys_changelotterytickets(void)
 {
-  return 1;
+  int tickets, pid;
+  if (argint(0, &tickets) < 0)
+    return -1;
+  if(argint(1, &pid) < 0)
+    return -1;
+  changepriority(tickets, pid);
+  return tickets;
 }
 
 int sys_printproc(void)
