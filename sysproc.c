@@ -151,5 +151,6 @@ int sys_changelotterytickets(void)
 
 int sys_printproc(void)
 {
+  printproc();
   return 1;
 }

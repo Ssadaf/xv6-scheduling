@@ -40,6 +40,7 @@ int main ()
 	{
 		for (i = 0; i < NCHILD; i++)
 			wait();
+		printproc();
 		printf(1, "priority queue test finished\n");
 	}
 

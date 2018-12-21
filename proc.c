@@ -132,18 +132,99 @@ void changepriority(int priority, int pid)
 }
 
 void changelotterytickets(int ticketcount, int pid)
-{
-
+{ 
+  acquire(&ptable.lock);
+  struct proc *p;
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
+  {
+    if(p->pid == pid)
+      p->lottery_ticket = ticketcount;
+  }
+  release(&ptable.lock); 
 }
 
 void changequeue(int queuenum, int pid)
 {
+  acquire(&ptable.lock);
+  struct proc *p;
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
+  {
+    if(p->pid == pid)
+      p->queue_num = queuenum;
+  }
+  release(&ptable.lock); 
+}
 
+char * statetostring(enum procstate pstate)
+{
+  if (pstate == UNUSED)
+    return "UNUSED";
+  if (pstate == EMBRYO)
+    return "EMBRYO";
+  if (pstate == SLEEPING)
+    return "SLEEPING";
+  if (pstate == RUNNABLE)
+    return "RUNNABLE";
+  if (pstate == RUNNING)
+    return "RUNNING";
+  if (pstate == ZOMBIE)
+    return "ZOMBIE";
+  return "UNKNOWN";
+}
+
+int posnumtsostring(int num, char * out)
+{
+  if (num == 0)
+  {
+    out[0] = '0';
+    return 1;
+  }
+  int i = 0, tempnum = num, j;
+  for (;tempnum > 0; tempnum /= 10)
+    i++;
+  for (j = i - 1; j >= 0; j--)
+  {
+    out[j] = num % 10;
+    num /= 10;
+  }
+  return i;
 }
 
 void printproc()
 {
-
+  cprintf("name\t\tpid\tstate\t\tqueue\tpriority\tlottery tickets  \tcreation time\n");
+  acquire(&ptable.lock);
+  struct proc *p;
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
+    if(p->state != UNUSED)
+    {
+      int len = 0;
+      char out[256];
+      for (len = 0; p->name[len] != '\0'; len++)
+        out[len] = p->name[len];
+      for (;len < 10; len++)
+        out[len] = ' ';
+      len += posnumtsostring(p->pid, out + len);
+      for (;len < 20; len++)
+        out[len] = ' ';
+      for (; *(statetostring(p->state) + len - 20) != '\0'; len++)
+        out[len] = *(statetostring(p->state) + len - 20);
+      for (;len < 30; len++)
+        out[len] = ' ';
+      len += posnumtsostring(p->queue_num, out + len);
+      for (;len < 40; len++)
+        out[len] = ' ';
+      len += posnumtsostring(p->priority, out + len);
+      for (;len < 50; len++)
+        out[len] = ' ';
+      len += posnumtsostring(p->lottery_ticket, out + len);
+      for (;len < 60; len++)
+        out[len] = ' ';
+      len += posnumtsostring(p->creation_time, out + len);
+      out[len] = '\0';
+      cprintf("%s\n", out);
+    }
+  release(&ptable.lock); 
 }
 
 //PAGEBREAK: 32
