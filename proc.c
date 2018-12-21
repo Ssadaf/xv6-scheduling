@@ -89,7 +89,7 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
-  p->creation_time = ticks;
+  p->creation_time = ticks + p->pid;
   p->priority = 5;
   p->lottery_ticket = 1;
   p->queue_num = 3;
@@ -195,6 +195,7 @@ int posnumtsostring(int num, char * out)
 void printproc()
 {
   cprintf("name           pid  state     queue     priority  lotteryTickets  creationTime\n");
+  cprintf("------------------------------------------------------------------------------\n");
   acquire(&ptable.lock);
   struct proc *p;
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)

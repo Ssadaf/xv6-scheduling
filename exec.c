@@ -102,6 +102,7 @@ exec(char *path, char **argv)
   curproc->priority = 1;
   curproc->lottery_ticket = 10;
   curproc->queue_num = 2;
+  curproc->creation_time = ticks + curproc->pid;
   switchuvm(curproc);
   freevm(oldpgdir);
   return 0;

@@ -16,11 +16,8 @@ int main ()
 			printf(1, "fork failed\n");
 			exit();
 		}
-		else if (pid > 0){
+		else if (pid > 0)
 			pid = fork();
-			if(i == 6)
-				changequeue(2, pid);
-		}
 		else
 			break;
 	
@@ -31,6 +28,13 @@ int main ()
 	}
 	else if (pid == 0)
 	{
+		if(i == 6)
+		{
+			changequeue(2, getpid());
+			printproc();
+		}
+		if (i == 9)
+			changequeue(2, getpid());
 		changepriority(NCHILD - i + 10, getpid());
 		int j = 0;
         int z = 1;
@@ -43,7 +47,6 @@ int main ()
 	{
 		for (i = 0; i < NCHILD; i++)
 			wait();
-		printproc();
 		printf(1, "priority queue test finished\n");
 	}
 

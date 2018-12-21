@@ -148,7 +148,7 @@ int sys_changequeue(void)
     return -1;
   if(argint(1, &pid) < 0)
     return -1;
-  changepriority(queue, pid);
+  changequeue(queue, pid);
   return queue;
 }
 
@@ -159,7 +159,7 @@ int sys_changelotterytickets(void)
     return -1;
   if(argint(1, &pid) < 0)
     return -1;
-  changepriority(tickets, pid);
+  changelotterytickets(tickets, pid);
   return tickets;
 }
 
