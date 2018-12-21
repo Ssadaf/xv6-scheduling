@@ -17,7 +17,27 @@ int main ()
 			exit();
 		}
 		else if (pid > 0)
+		{
+			if(i == 13)
+			{
+				changequeue(1, pid);
+				changelotterytickets(10, pid);
+				printproc();
+			}
+
+			if(i == 18)
+			{
+				changequeue(1, pid);
+				changelotterytickets(50, pid);
+			}
+
+			if (i == 9)
+				changequeue(2, pid);
+			if (i == 6)
+				changequeue(2, pid);
+			changepriority(NCHILD - i + 10, getpid());
 			pid = fork();
+		}
 		else
 			break;
 	
@@ -28,14 +48,6 @@ int main ()
 	}
 	else if (pid == 0)
 	{
-		if(i == 6)
-		{
-			changequeue(2, getpid());
-			printproc();
-		}
-		if (i == 9)
-			changequeue(2, getpid());
-		changepriority(NCHILD - i + 10, getpid());
 		int j = 0;
         int z = 1;
         for(j = 0; j < 100000000; j++)

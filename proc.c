@@ -152,7 +152,7 @@ void changequeue(int queuenum, int pid)
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
   {
     if(p->pid == pid)
-      p->queue_num = queuenum;
+      p->queue_num = (queuenum > 0 && queuenum < 4 ? queuenum : 3);
   }
   release(&ptable.lock); 
 }
@@ -472,7 +472,7 @@ void
 scheduler(void)
 {
   int proc_set;
-  int min_pnum, min_creation;
+  int min_pnum, min_creation, lottery_sum, lottery_winner;
   struct proc *p;
   struct proc *to_run;
   struct cpu *c = mycpu();
@@ -486,18 +486,40 @@ scheduler(void)
     min_pnum = 0;
     min_creation = 0;
     proc_set = 0;
+    lottery_sum = 0;
     acquire(&ptable.lock);
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if (p->state != RUNNABLE || p->queue_num != 2)
+      if (p->state != RUNNABLE || p->queue_num != 1)
         continue;
-      if(proc_set == 0 || p->creation_time < min_creation){
-        min_creation = p->creation_time;
-        to_run = p;
-        proc_set = 1;
+      lottery_sum += p->lottery_ticket;
+      to_run = p;
+      proc_set = 1;
+    }
+    if(proc_set){
+      //generate random
+      lottery_winner = (ticks * ticks * ticks * to_run->creation_time) % lottery_sum;
+      for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+        if (p->state != RUNNABLE || p->queue_num != 1)
+          continue;
+        lottery_winner -= p->lottery_ticket;
+        if (lottery_winner < 0){
+          to_run = p;
+          break;
+        }
       }
     }
-    if (!proc_set)
-    {
+    if(!proc_set){
+      for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+        if (p->state != RUNNABLE || p->queue_num != 2)
+          continue;
+        if(proc_set == 0 || p->creation_time < min_creation){
+          min_creation = p->creation_time;
+          to_run = p;
+          proc_set = 1;
+        }
+      }
+    }
+    if (!proc_set){
       for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
         if(p->state != RUNNABLE || p->queue_num != 3)
           continue;
