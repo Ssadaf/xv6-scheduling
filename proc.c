@@ -459,50 +459,6 @@ void round_robin(){
   // }
 }
 
-void priority_scheduler(void){
-  int proc_set = 0;
-  int max_priority = 0;
-  struct proc *p;
-  struct proc *to_run;
-  struct cpu *c = mycpu();
-  c->proc = 0;
-  
-  // Enable interrupts on this processor.
-  sti();
-
-  // Loop over process table looking for process to run.
-  acquire(&ptable.lock);
-  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-    if(p->state != RUNNABLE)
-      continue;
-
-    // Switch to chosen process.  It is the process's job
-    // to release ptable.lock and then reacquire it
-    // before jumping back to us.
-    if(p->priority > max_priority){
-      max_priority = p->priority;
-      to_run = p;
-      proc_set = 1;
-    }
-  }
-  if(proc_set == 1){
-    c->proc = to_run;
-    switchuvm(to_run);
-    to_run->state = RUNNING;
-
-    swtch(&(c->scheduler), to_run->context);
-    switchkvm();
-
-    // Process is done running for now.
-    // It should have changed its p->state before coming back.
-    c->proc = 0;
-    proc_set = 0;
-    max_priority = 0;
-  }
-  release(&ptable.lock);
-  
-}
-
 //PAGEBREAK: 42
 // Per-CPU process scheduler.
 // Each CPU calls scheduler() after setting itself up.
@@ -530,16 +486,24 @@ scheduler(void)
     proc_set = 0;
     acquire(&ptable.lock);
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->state != RUNNABLE)
+      if (p->state != RUNNABLE || p->queue_num != 2)
         continue;
+      
+    }
+    if (!proc_set)
+    {
+      for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+        if(p->state != RUNNABLE || p->queue_num != 3)
+          continue;
 
-      // Switch to chosen process.  It is the process's job
-      // to release ptable.lock and then reacquire it
-      // before jumping back to us.
-      if(proc_set == 0 || p->priority < min_pnum){
-        min_pnum = p->priority;
-        to_run = p;
-        proc_set = 1;
+        // Switch to chosen process.  It is the process's job
+        // to release ptable.lock and then reacquire it
+        // before jumping back to us.
+        if(proc_set == 0 || p->priority < min_pnum){
+          min_pnum = p->priority;
+          to_run = p;
+          proc_set = 1;
+        }
       }
     }
    if(proc_set == 1){
