@@ -131,6 +131,21 @@ void changepriority(int priority, int pid)
   release(&ptable.lock);
 }
 
+void changelotterytickets(int ticketcount, int pid)
+{
+
+}
+
+void changequeue(int queuenum, int pid)
+{
+
+}
+
+void printproc()
+{
+
+}
+
 //PAGEBREAK: 32
 // Set up first user process.
 void

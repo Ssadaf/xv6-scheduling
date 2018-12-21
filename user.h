@@ -26,6 +26,9 @@ int uptime(void);
 int ticketlockinit(void);
 int ticketlocktest(void);
 int changepriority(int, int);
+int changequeue(int, int);
+int changelotterytickets(int, int);
+int printproc();
 
 // ulib.c
 int stat(const char*, struct stat*);

@@ -138,3 +138,18 @@ int sys_changepriority(void)
   changepriority(priority, myproc()->pid);
   return priority;
 }
+
+int sys_changequeue(void)
+{
+  return 1;
+}
+
+int sys_changelotterytickets(void)
+{
+  return 1;
+}
+
+int sys_printproc(void)
+{
+  return 1;
+}

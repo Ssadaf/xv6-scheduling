@@ -108,6 +108,9 @@ extern int sys_ticketlocktest(void);
 extern int sys_rwinit(void);
 extern int sys_rwtest(void);
 extern int sys_changepriority(void);
+extern int sys_changelotterytickets(void);
+extern int sys_changequeue(void);
+extern int sys_printproc(void);
 
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -136,6 +139,9 @@ static int (*syscalls[])(void) = {
 [SYS_rwinit] sys_rwinit,
 [SYS_rwtest] sys_rwtest,
 [SYS_changepriority] sys_changepriority,
+[SYS_changequeue] sys_changequeue,
+[SYS_changelotterytickets] sys_changelotterytickets,
+[SYS_printproc] sys_printproc,
 };
 
 void

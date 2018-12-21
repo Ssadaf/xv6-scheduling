@@ -25,3 +25,6 @@
 #define SYS_rwinit 24
 #define SYS_rwtest 25
 #define SYS_changepriority 26
+#define SYS_changequeue 27
+#define SYS_changelotterytickets 28
+#define SYS_printproc 29

@@ -145,8 +145,11 @@ void		initticketlock(struct ticketlock*);
 void		acquireticketlock(struct ticketlock*);
 void		releaseticketlock(struct ticketlock*);
 
-//priority-schedule
+//schedule
 void        changepriority(int priority, int pid);
+void        changelotterytickets(int count, int pid);
+void        changequeue(int queuenum, int pid);
+void        printproc();
 
 // string.c
 int             memcmp(const void*, const void*, uint);
