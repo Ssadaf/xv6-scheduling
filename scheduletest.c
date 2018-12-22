@@ -22,7 +22,6 @@ int main ()
 			{
 				changequeue(1, pid);
 				changelotterytickets(10, pid);
-				printproc();
 			}
 
 			if(i == 18)
@@ -35,6 +34,8 @@ int main ()
 				changequeue(2, pid);
 			if (i == 6)
 				changequeue(2, pid);
+			if(i == NCHILD-1)
+				printproc();
 			changepriority(NCHILD - i + 10, getpid());
 			pid = fork();
 		}

@@ -16,6 +16,7 @@ struct {
 static struct proc *initproc;
 
 int nextpid = 1;
+int procindex = 1;
 extern void forkret(void);
 extern void trapret(void);
 
@@ -93,6 +94,7 @@ found:
   p->priority = 5;
   p->lottery_ticket = 1;
   p->queue_num = 3;
+  p->index = procindex++;
 
   release(&ptable.lock);
 
@@ -194,8 +196,8 @@ int posnumtsostring(int num, char * out)
 
 void printproc()
 {
-  cprintf("name           pid  state     queue     priority  lotteryTickets  creationTime\n");
-  cprintf("------------------------------------------------------------------------------\n");
+  cprintf("name           pid  state     queue     priority  lotteryTickets  creationTime   index\n");
+  cprintf("---------------------------------------------------------------------------------------\n");
   acquire(&ptable.lock);
   struct proc *p;
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
@@ -224,6 +226,9 @@ void printproc()
       for (;len < 66; len++)
         out[len] = ' ';
       len += posnumtsostring(p->creation_time, out + len);
+      for (;len < 81; len++)
+        out[len] = ' ';
+      len += posnumtsostring(p->index, out + len);
       out[len] = '\0';
       cprintf("%s\n", out);
     }
