@@ -16,7 +16,7 @@ struct {
 static struct proc *initproc;
 
 int nextpid = 1;
-int procindex = 1;
+int procindex = 0;
 extern void forkret(void);
 extern void trapret(void);
 
@@ -93,7 +93,7 @@ found:
   p->creation_time = ticks + p->pid;
   p->priority = 5;
   p->lottery_ticket = 1;
-  p->queue_num = 3;
+  p->queue_num = 1;
   p->index = procindex++;
 
   release(&ptable.lock);
@@ -502,7 +502,7 @@ scheduler(void)
     }
     if(proc_set){
       //generate random
-      lottery_winner = (ticks * ticks * ticks * to_run->creation_time) % lottery_sum;
+      lottery_winner = (ticks) % lottery_sum;
       for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
         if (p->state != RUNNABLE || p->queue_num != 1)
           continue;

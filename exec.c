@@ -100,10 +100,9 @@ exec(char *path, char **argv)
   curproc->tf->eip = elf.entry;  // main
   curproc->tf->esp = sp;
   curproc->priority = 1;
-  curproc->lottery_ticket = 10;
+  curproc->lottery_ticket = 1000;
   curproc->queue_num = 1;
   curproc->creation_time = ticks + curproc->pid;
-  curproc->index = 0;
   switchuvm(curproc);
   freevm(oldpgdir);
   return 0;
