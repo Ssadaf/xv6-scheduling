@@ -18,7 +18,7 @@ int main ()
 	{
 		float j = 0;
         int z = 1;
-        for(j = 0; j < 100000000.0; j+=0.5)
+        for(j = 0; j < 100000000.0; j+=0.25)
             z += (j + 1);
 		printf (2, "", z);
 		printf(2, "child with pid %d is done\n", getpid());
